@@ -12,5 +12,22 @@
     ],
     "registryUrlTemplate": "https://deb.debian.org/debian?suite=stable&components=main&binaryArch=amd64",
     "datasourceTemplate": "deb"
+  }],
+  "packageRules": [{
+    "autoApprove": true,
+    "matchUpdateTypes": [
+      "major"
+    ]
+  }, {
+    "automerge": true,
+    "matchUpdateTypes": [
+      "minor"
+    ]
+  }, {
+    "automerge": true,
+    "automergeType": "branch",
+    "matchUpdateTypes": [
+      "patch"
+    ]
   }]
 }
