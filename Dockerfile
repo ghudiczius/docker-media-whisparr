@@ -24,4 +24,5 @@ VOLUME /config /downloads /xxx
 WORKDIR /opt/whisparr
 
 EXPOSE 7878
-CMD ["/opt/whisparr/Whisparr", "-data=/config", "-nobrowser"]
+ENTRYPOINT ["/opt/whisparr/Whisparr"]
+CMD ["-data=/config", "-nobrowser"]
