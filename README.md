@@ -5,7 +5,7 @@ Simple docker image for Whisparr without any bloat, built on the official mono i
 ## Usage
 
 ```sh
-docker run --rm registry.gitlab.jmk.hu/media/whisparr:<VERSION> \
+docker run --rm ghudiczius/whisparr:<VERSION> \
   -p 6969:6969 \
   -v path/to/config:/config \
   -v path/to/downloads:/downloads \
@@ -15,7 +15,7 @@ docker run --rm registry.gitlab.jmk.hu/media/whisparr:<VERSION> \
 or
 
 ```sh
-docker run --rm ghudiczius/whisparr:<VERSION> \
+docker run --rm registry.gitlab.jmk.hu/media/whisparr:<VERSION> \
   -p 6969:6969 \
   -v path/to/config:/config \
   -v path/to/downloads:/downloads \
