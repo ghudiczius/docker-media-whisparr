@@ -2,9 +2,17 @@ variables:
   DOCKER_HUB_IMAGE: "${DOCKER_HUB_USERNAME}/${CI_PROJECT_NAME}"
   VERSION: "2.0.0.548"
 
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+
 stages:
 - test
 - build
+- docs
 
 kaniko-check:
   image:
@@ -43,5 +51,25 @@ kaniko:
   - echo "Successfully published new image ${CI_REGISTRY_IMAGE}:${VERSION}.${CI_PIPELINE_IID}"
   - echo "Successfully published new image ${DOCKER_HUB_IMAGE}:${VERSION}.${CI_PIPELINE_IID}"
   stage: build
+  tags:
+  - kubernetes
+
+docker-hub:
+  image: alpine/curl:8.9.1
+  rules:
+  - changes:
+    - README.md
+  - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+  script:
+  - apk add jq
+  - |
+    DOCKER_HUB_TOKEN="$(curl --request POST --header "content-type: application/json" "${DOCKER_HUB_API_URL}users/login" --data-raw "{\"username\": \"${DOCKER_HUB_USERNAME}\", \"password\": \"${DOCKER_HUB_PASSWORD}\"}" | jq -r .token)"
+    README_CONTENT="$(cat README.md)"
+    echo "${README_CONTENT}"
+    README_CONTENT="${README_CONTENT//$'\\'/\\\\}"
+    README_CONTENT="${README_CONTENT//$'\n'/\\n}"
+    echo "${README_CONTENT}"
+    curl --request PATCH --header "Authorization: Bearer ${DOCKER_HUB_TOKEN}" --header "content-type: application/json" "${DOCKER_HUB_API_URL}repositories/${DOCKER_HUB_USERNAME}/${CI_PROJECT_NAME}/" --data-raw "{\"full_description\": \"${README_CONTENT}\"}"
+  stage: docs
   tags:
   - kubernetes
